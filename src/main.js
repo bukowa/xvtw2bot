@@ -26,6 +26,7 @@ import {newStore} from "./modules/store"
         app.use(store)
         // app.use(JsonViewer)
         app.mount('#app')
+
     }
 })()
 

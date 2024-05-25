@@ -1,5 +1,5 @@
 <script>
-import {RouteProvider, SocketService} from "../modules/services";
+import {RouteProvider, SocketService, ModelService} from "../modules/services";
 import JsonViewer from "vue-json-viewer";
 
 export default {
@@ -13,6 +13,20 @@ export default {
       return this.$store.state.quests
     }
   },
+  methods: {
+    finishQuests: function() {
+      console.log("finishing quests...")
+      SocketService.emit(RouteProvider.QUESTS_GET_QUEST_LINES, {}, function(d){
+        d['quest_lines'].forEach((q)=>{q.quests.forEach((q2)=>{q2.isFinishable() ? SocketService.emit(RouteProvider.QUEST_FINISH_QUEST, {
+          'quest_id': q2.data['quest_id'],
+          'village_id': ModelService.getSelectedVillage().getId()
+        }) : null})});
+      });
+    },
+    questFinisher: function () {
+      setInterval(this.finishQuests, 20000)
+    }
+  }
 }
 </script>
 
@@ -26,6 +40,7 @@ export default {
         boxed
         sort></json-viewer>
   </div>
+  <button type="button" @click="questFinisher">RUN</button>
 </template>
 
 <style scoped>

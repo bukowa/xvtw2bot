@@ -48,25 +48,29 @@ export async function newStore(debug=true) {
             }
         },
         mutations: {
-            increment(state) {
-                state.count++
+            updateVillages(state, data) {
+                state.villages = data;
+            },
+            updateQuests(state, data) {
+                state.quests = data;
             }
         },
     })
 
-    store.state.quests = await fetchDataAsync(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (data) => {
+    let quests = await fetchDataAsync(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (data) => {
         log("Get quests...");
         return data;
     });
+    store.commit('updateQuests', quests)
 
-    setInterval(()=>{emit(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (d)=>{
-        log("Get quests...")
-        store.state.quests = d;
-    })}, 5000)
-
-    runInterval(withLog(
-        "Get villages...",
-        ()=>{store.state.villages = ModelService.getVillages()}
-    ), 5000)
+    // setInterval(()=>{emit(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (d)=>{
+    //     log("Get quests...")
+    //     store.commit('updateQuests', d)
+    // })}, 5000)
+    //
+    // runInterval(withLog(
+    //     "Get villages...",
+    //     ()=>{store.commit('updateVillages', ModelService.getVillages())}
+    // ), 5000)
     return store;
 }

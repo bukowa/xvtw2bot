@@ -22,6 +22,7 @@
             <TabItem url="#/looted" name="Looted"></TabItem>
             <TabItem url="#/quester" name="Quester"></TabItem>
             <TabItem url="#/villages" name="Villages"></TabItem>
+            <TabItem url="#/runner" name="Runner"></TabItem>
           </div>
         </div>
         <div class="box-paper footer">
@@ -46,8 +47,10 @@ import SpyComp from "./components/SpyComp.vue";
 import LootedCounter from "./components/LootedCounter.vue";
 import Quester from "./components/Quester.vue";
 import Villages from "./components/Villages.vue";
-
+import NewRunner from "./components/NewRunner.vue";
 const wrapper = document.getElementById('wrapper');
+
+import * as svc from './modules/services'
 
 const routes = {
   "/": SpyComp,
@@ -56,8 +59,12 @@ const routes = {
   "/spies": SpyComp,
   "/looted": LootedCounter,
   "/quester": Quester,
-  "/villages": Villages
+  "/villages": Villages,
+  "/runner": NewRunner
 }
+
+const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
+
 
 export default {
   name: 'App',
@@ -88,10 +95,34 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     window.addEventListener('hashchange', () => {
       this.currentPath = window.location.hash
     })
+    // pick world
+
+    // skip tutorial
+    if (document.querySelector('[ng-click="openSkipTutorialModal()"]') != null) {
+      svc.SocketService.emit(svc.RouteProvider.TUTORIAL_SKIP, {}, function() {
+        svc.$rootScope.$broadcast(svc.eventTypeProvider.NOTIFICATION_ENABLE);
+        svc.$timeout(function() {
+          window.location.reload();
+        }, 100);
+      });
+    }
+    // take rewards
+
+    let e = document.querySelector('[ng-click="claimReward()"]');
+    if (e != null) {
+      e.click();
+    }
+    await sleep(500)
+    // skip news
+    e = document.querySelector('[ng-click="cancel(content); hide(notificationId);"]')
+    while (!e.classList.contains('ng-hide')) {
+      await sleep(500)
+      e.click();
+    }
   }
 }
 </script>

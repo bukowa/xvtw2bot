@@ -3,41 +3,22 @@ export const name = 'api';
 export var ModelService;
 export var SocketService;
 export var RouteProvider;
-
-export class Scout {
-    static BUILDINGS = 'buildings';
-    static UNITS = 'units';
-}
-
-export class Data {
-    /**
-     * @param {number} vStart The string
-     * @param {number} vTarget The string
-     * @param {number} spys The string
-     * @param {string} type 'units' or 'buildings'
-     */
-    static SCOUTING_SEND_COMMAND = function (vStart, vTarget, spys, type) {
-        return {
-            "startVillage": vStart,
-            "targetVillage": vTarget,
-            "spys": spys,
-            "type": type,
-        }
-    };
-    /**
-     * @param {number} command_id
-     */
-    static SCOUTING_CANCEL_COMMAND = function(command_id) {
-        return {
-            'command_id': command_id,
-        }
-    }
-}
+export var EventTypeProvider;
+export var $timeout;
+export var $rootScope;
+export var VillageService;
+export var BuildingService;
 
 export function Init() {
     ModelService = window.injector.get("modelDataService")
     SocketService = window.injector.get("socketService")
     RouteProvider = window.injector.get("routeProvider")
+    EventTypeProvider = window.injector.get("eventTypeProvider")
+    $rootScope = injector.get('$rootScope');
+    $timeout = injector.get('$timeout');
+    VillageService = injector.get('villageService');
+    BuildingService = injector.get('buildingService');
+
     Routes.SCOUTING_SEND_COMMAND = RouteProvider.SCOUTING_SEND_COMMAND
     Routes.SCOUTING_CANCEL_COMMAND = RouteProvider.SCOUTING_CANCEL_COMMAND
     Routes.SCOUTING_RECRUIT = RouteProvider.SCOUTING_RECRUIT
