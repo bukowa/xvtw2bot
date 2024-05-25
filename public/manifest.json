@@ -1,0 +1,23 @@
+{
+  "name": "tw2chrombot",
+  "description": "Build an Extension!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+    }
+  },
+  "content_scripts": [{
+    "js": ["loader.js"],
+    "matches": ["https://*.tribalwars2.com/game.php*"],
+    "run_at": "document_end"
+  }],
+  "web_accessible_resources": [
+    {
+      "resources": ["loader.js", "index.js", "index.css", "index.html", "main.js"],
+      "matches": ["https://*.tribalwars2.com/*"]
+    }
+  ]
+}
