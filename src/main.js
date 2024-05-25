@@ -20,6 +20,7 @@ import {newStore} from "./modules/store"
         console.log("!@#!@################################\n!@############\n!@#######################\n!@################")
         console.log(ModelService.getVillages())
         console.log("ready")
+
         let app = createApp(App)
         app.use(newStore())
         // app.use(JsonViewer)
