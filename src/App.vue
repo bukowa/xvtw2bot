@@ -21,6 +21,7 @@
             <TabItem url="#/spies" name="Spies"></TabItem>
             <TabItem url="#/looted" name="Looted"></TabItem>
             <TabItem url="#/quester" name="Quester"></TabItem>
+            <TabItem url="#/villages" name="Villages"></TabItem>
           </div>
         </div>
         <div class="box-paper footer">
@@ -44,6 +45,7 @@ import WindowInjector from "./components/WindowInjector.vue";
 import SpyComp from "./components/SpyComp.vue";
 import LootedCounter from "./components/LootedCounter.vue";
 import Quester from "./components/Quester.vue";
+import Villages from "./components/Villages.vue";
 
 const wrapper = document.getElementById('wrapper');
 
@@ -54,6 +56,7 @@ const routes = {
   "/spies": SpyComp,
   "/looted": LootedCounter,
   "/quester": Quester,
+  "/villages": Villages
 }
 
 export default {

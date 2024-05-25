@@ -3,7 +3,7 @@ import App from './App.vue'
 import {ModelService, Init} from "./modules/services";
 import {newStore} from "./modules/store"
 
-(function awaitInjector () {
+(async function awaitInjector () {
     if (typeof window.injector === 'undefined' || window.injector.get('modelDataService').getVillages() === null) {
         console.log("waiting")
         setTimeout(() => awaitInjector(), 250);
@@ -22,7 +22,8 @@ import {newStore} from "./modules/store"
         console.log("ready")
 
         let app = createApp(App)
-        app.use(newStore())
+        let store= await newStore();
+        app.use(store)
         // app.use(JsonViewer)
         app.mount('#app')
     }

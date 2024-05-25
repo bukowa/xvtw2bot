@@ -8,28 +8,11 @@ export default {
   components: {
     JsonViewer,
   },
-  data() {
-    return {
-      'quests': {},
+  computed: {
+    quests() {
+      return this.$store.state.quests
     }
   },
-  mounted() {
-    this.updateQuests();
-    window.setInterval(() => {
-      this.updateQuests()
-    }, 30000)
-  },
-  methods: {
-    updateQuests: function () {
-      const vm = this;
-      SocketService.emit(
-          RouteProvider.QUESTS_GET_QUEST_LINES, {}, function (d) {
-            console.log(d)
-            vm.quests = d;
-          }
-      )
-    }
-  }
 }
 </script>
 
