@@ -8,13 +8,13 @@ $script3.href = chrome.runtime.getURL('index.css');
 document.body.appendChild($script3);
 $script3.setAttribute("defer", "defer");
 
-$script2.src = chrome.runtime.getURL('main.js');
-$script2.setAttribute("defer", "defer");
-document.head.appendChild($script2);
+// $script2.src = chrome.runtime.getURL('main.js');
+// $script2.setAttribute("defer", "defer");
+// document.head.appendChild($script2);
 
 $script.src = chrome.runtime.getURL('index.js');
 $script.setAttribute("defer", "defer");
-document.body.appendChild($script);
+document.head.appendChild($script);
 
 function waitForElm(selector) {
     return new Promise(resolve => {
@@ -36,10 +36,10 @@ function waitForElm(selector) {
     });
 }
 
-waitForElm('#toolbar-left').then((elm) => {
-    console.log('Element is ready');
-    console.log(elm.textContent);
-});
+// waitForElm('#toolbar-left').then((elm) => {
+//     console.log('Element is ready');
+//     console.log(elm.textContent);
+// });
 
 const app = document.createElement("div")
 app.setAttribute("id", "app")

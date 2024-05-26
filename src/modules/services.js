@@ -24,6 +24,7 @@ export function Init() {
     Routes.SCOUTING_RECRUIT = RouteProvider.SCOUTING_RECRUIT
     Routes.SCOUTING_CANCEL_RECRUIT = RouteProvider.SCOUTING_CANCEL_RECRUIT
     Routes.QUESTS_GET_QUEST_LINES = RouteProvider.QUESTS_GET_QUEST_LINES
+    Routes.MAP_GET_MINIMAP_VILLAGES = RouteProvider.MAP_GET_MINIMAP_VILLAGES
 }
 
 export class Routes {
@@ -32,8 +33,9 @@ export class Routes {
     static SCOUTING_RECRUIT
     static SCOUTING_CANCEL_RECRUIT
     static QUESTS_GET_QUEST_LINES
+    static MAP_GET_MINIMAP_VILLAGES
 }
 
-export function GameApi(route, data, f) {
+export function SvcEmit(route, data, f) {
     SocketService.emit(route, data, f)
 }

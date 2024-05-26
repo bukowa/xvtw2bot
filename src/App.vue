@@ -104,7 +104,7 @@ export default {
     // skip tutorial
     if (document.querySelector('[ng-click="openSkipTutorialModal()"]') != null) {
       svc.SocketService.emit(svc.RouteProvider.TUTORIAL_SKIP, {}, function() {
-        svc.$rootScope.$broadcast(svc.eventTypeProvider.NOTIFICATION_ENABLE);
+        svc.$rootScope.$broadcast(svc.EventTypeProvider.NOTIFICATION_ENABLE);
         svc.$timeout(function() {
           window.location.reload();
         }, 100);

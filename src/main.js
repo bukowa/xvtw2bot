@@ -1,32 +1,53 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import {ModelService, Init} from "./modules/services";
+import {ModelService, Init, $rootScope, EventTypeProvider} from "./modules/services";
 import {newStore} from "./modules/store"
+import {mapData} from "./define/mapdata";
 
-(async function awaitInjector () {
-    if (typeof window.injector === 'undefined' || window.injector.get('modelDataService').getVillages() === null) {
-        console.log("waiting")
-        setTimeout(() => awaitInjector(), 250);
+(function awaitInjector (window, main) {
+    if (typeof window.injector === 'undefined') {
+        setTimeout(() => awaitInjector(window, main), 250);
     }
     else {
-        let v = window.injector.get("modelDataService").getVillages()
-        let k = Object.keys(v);
-        if (v[k[0]]['initialized'] === false) {
-            console.log('false')
-            setTimeout(() => awaitInjector(), 250);
-            return
-        }
-        Init()
-        console.log("!@#!@################################\n!@############\n!@#######################\n!@################")
-        console.log(ModelService.getVillages())
-        console.log("ready")
-
-        let app = createApp(App)
-        let store= await newStore();
-        app.use(store)
-        // app.use(JsonViewer)
-        app.mount('#app')
-
+        main(window);
     }
-})()
+})(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window, function (window, undefined) {
+    console.log('Injector is ready...')
+    const define = window.define;
+    const require = window.require;
+    console.log(define)
+    Init()
 
+    define('my/app', [
+        'struct/MapData',
+    ], function (mapData) {
+        console.log("Creating new store...")
+        let store = newStore()
+        console.log("Creating new app...")
+        let app = createApp(App)
+        app.use(store)
+        console.log("Mounting #app...")
+        app.mount('#app')
+        return app;
+    })
+    mapData(window)
+    require([
+        'my/app',
+        'my/mapData'
+    ], function (
+        app,
+        mapData,
+    ){
+
+        // load map data after it's first loaded by the game
+        let mapDataInitialized = false;
+        let mapDataLoading = false;
+        $rootScope.$on(EventTypeProvider.MAP_VILLAGE_DATA, function (e,d){
+            if (mapDataLoading || !mapDataInitialized) {
+                mapDataLoading = true
+                mapData.load((c, i, g) =>{console.log(c, i)})
+                mapDataInitialized = true;
+            }
+        })
+    })
+})

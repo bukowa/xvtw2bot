@@ -33,7 +33,7 @@
 
 <script>
 import JsonViewer from "vue-json-viewer";
-import {GameApi, ModelService, Routes} from "../modules/services";
+import {ModelService} from "../modules/services";
 
 // spy 'type'
 // 3 = moving
@@ -93,21 +93,21 @@ export default {
       return 'no-border icon-120x120-unit-spy' + ((spyID > 1) ? ('-' + spyID) : '')
     },
     updateSpies: function () {
-      let v = ModelService.getVillages()
-      let k = Object.keys(v)
-      for (let i = 0; i < k.length; i++) {
-        let tavern = v[k[i]]['buildingData']['data']['tavern']['level']
-        let spies = v[k[i]]['scoutingInfo']['spies']
-        spies.forEach(function (v, i) {
-          spies[i]['canRecruit'] = canRecruitSpy(tavern, spies[i].id)
-          spies[i]['typeReadable'] = getReadableSpyType(spies[i]['type'])
-        })
-        this.villages[i] = {
-          'id': k[i],
-          'tavern': tavern,
-          'spies': spies,
-        }
-      }
+      // let v = ModelService.getVillages()
+      // let k = Object.keys(v)
+      // for (let i = 0; i < k.length; i++) {
+      //   let tavern = v[k[i]]['buildingData']['data']['tavern']['level']
+      //   let spies = v[k[i]]['scoutingInfo']['spies']
+      //   spies.forEach(function (v, i) {
+      //     spies[i]['canRecruit'] = canRecruitSpy(tavern, spies[i].id)
+      //     spies[i]['typeReadable'] = getReadableSpyType(spies[i]['type'])
+      //   })
+      //   this.villages[i] = {
+      //     'id': k[i],
+      //     'tavern': tavern,
+      //     'spies': spies,
+      //   }
+      // }
     },
     recruitSpy(village_id, index) {
       const vm = this;

@@ -1,30 +1,33 @@
 <script>
 import JsonViewer from "vue-json-viewer";
+import {mapState, mapGetters} from "vuex";
 
 export default {
   components: {
     JsonViewer,
   },
   computed: {
-    villages() {
-      return this.$store.state.villages
-    }
-  }
+    ...mapState([
+      'villages',
+    ]),
+    villlageCount: ()=>{
+      return this.villages.length
+    },
+  },
 }
 
 </script>
 
 <template>
   <div>
-    Hello! {{ count }}
   </div>
-  <json-viewer
-      :value="villages"
-      :expand-depth=1
-      copyable
-      boxed
-      sort>
-  </json-viewer>
+<!--  <json-viewer-->
+<!--      :value="villages"-->
+<!--      :expand-depth=1-->
+<!--      copyable-->
+<!--      boxed-->
+<!--      sort>-->
+<!--  </json-viewer>-->
 
 </template>
 

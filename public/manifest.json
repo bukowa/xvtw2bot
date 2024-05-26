@@ -16,7 +16,7 @@
   }],
   "web_accessible_resources": [
     {
-      "resources": ["loader.js", "index.js", "index.css", "index.html", "main.js"],
+      "resources": ["loader.js", "index.js", "index.css", "index.html"],
       "matches": ["https://*.tribalwars2.com/*"]
     }
   ]
