@@ -3,8 +3,6 @@ import App from './App.vue'
 import {ModelService, Init, $rootScope, EventTypeProvider} from "./modules/services";
 import {newStore} from "./modules/store"
 import {mapService} from "./define/mapdata";
-import PrimeVue from 'primevue/config';
-import 'primevue/resources/themes/aura-light-green/theme.css'
 (function awaitInjector (window, main) {
     if (typeof window.injector === 'undefined') {
         setTimeout(() => awaitInjector(window, main), 250);
@@ -27,7 +25,6 @@ import 'primevue/resources/themes/aura-light-green/theme.css'
         console.log("Creating new app...")
         let app = createApp(App)
         app.use(store)
-        app.use(PrimeVue)
         console.log("Mounting #app...")
         app.mount('#app')
         return {app: app, store: store};
@@ -70,7 +67,7 @@ import 'primevue/resources/themes/aura-light-green/theme.css'
                     current: i+1,
                 })
                 if (d['villages']) {
-                    app.store.commit('updateVillages', d['villages'])
+                    app.store.commit('updateTowns', d['villages'])
                 }
             }, 200);
         })

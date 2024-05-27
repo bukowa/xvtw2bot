@@ -2,56 +2,14 @@ import {createStore} from 'vuex'
 import {$rootScope, EventTypeProvider, RouteProvider, SocketService} from "./services";
 import {Villages} from "../utils/village";
 
-const emit = (route, payload, f) => {
-    SocketService.emit(route, payload, (data) => {
-        f(data)
-    });
-};
-
-const emitWithPromise = (route, payload = {}) => {
-    return new Promise((resolve, reject) => {
-        SocketService.emit(route, payload, (data) => {
-            try {
-                resolve(data);
-            } catch (error) {
-                reject(error);
-            }
-        });
-    });
-};
-
-const fetchDataAsync = async (route, payload, process) => {
-    try {
-        const data = await emitWithPromise(route, payload);
-        return process(data);
-    } catch (error) {
-        throw error;
-    }
-};
-
-const runInterval = (f, t) => {
-    f();
-    setInterval(f, t)
-};
-
-
-// Create a new store instance.
-export function newStore(debug = true) {
-    let log = (s) => console.log("Store: " + s);
-    let withLog = (s, f) => {
-        return () => {
-            debug ? log(s) : null
-            return f()
-        }
-    }
+export function newStore() {
     let store = createStore({
         state() {
             return {
                 path: "/",
-                count: 0,
                 villages: [],
+                towns: [],
                 quests: {},
-                mapDataLoadInitialized: false,
                 progressMapLoad: {
                     current: 0,
                     total: 0,
@@ -77,6 +35,9 @@ export function newStore(debug = true) {
             },
             villageMaxY(state){
                 return Math.max(...state.villages.map((v)=>v.y))
+            },
+            townCount(state){
+                return state.towns.length
             }
         },
         mutations: {
@@ -85,6 +46,9 @@ export function newStore(debug = true) {
             },
             updateVillages(state, data) {
                 state.villages = Villages.unique(state.villages.concat(data))
+            },
+            updateTowns(state, data) {
+                state.towns = Villages.unique(state.towns.concat(data))
             },
             updateQuests(state, data) {
                 state.quests = data;
@@ -128,21 +92,13 @@ export function newStore(debug = true) {
     })
 
     $rootScope.$on(EventTypeProvider.MAP_VILLAGE_DATA, function (e, d) {
-        console.log(EventTypeProvider.MAP_VILLAGE_DATA)
-        console.log(d)
     })
-
-    $rootScope.$on('QuestsInterfaceControllerInitialized', function () {
-        // Your code here, executed after the QuestsInterfaceController is initialized
-        console.log('emmitting')
-        SocketService.emit(RouteProvider.QUESTS_GET_QUEST_LINES)
-    });
 
     // should return list of all villages on load?
     // is executed multiple times so should concat?
     $rootScope.$on("Map/miniVillageData", function (e, d) {
-        console.log("Map/miniVillageData")
-        console.log(d)
+        // console.log("Map/miniVillageData")
+        // console.log(d)
     })
 
     // setInterval(()=>{emit(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (d)=>{
