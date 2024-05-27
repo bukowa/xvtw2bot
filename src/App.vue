@@ -23,6 +23,7 @@
             <TabItem url="#/quester" name="Quester"></TabItem>
             <TabItem url="#/villages" name="Villages"></TabItem>
             <TabItem url="#/runner" name="Runner"></TabItem>
+            <TabItem url="#/" name="Loader"></TabItem>
           </div>
         </div>
         <div class="box-paper footer">
@@ -38,7 +39,6 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
 import WindowFooter from "./components/WindowFooter.vue";
 import WindowScroll from "./components/WindowScroll.vue";
 import TabItem from './components/TabItem.vue';
@@ -48,13 +48,13 @@ import LootedCounter from "./components/LootedCounter.vue";
 import Quester from "./components/Quester.vue";
 import Villages from "./components/Villages.vue";
 import NewRunner from "./components/NewRunner.vue";
+import Loader from "./components/Loader.vue";
 const wrapper = document.getElementById('wrapper');
 
 import * as svc from './modules/services'
 
 const routes = {
-  "/": SpyComp,
-  "/settings": HelloWorld,
+  "/": Loader,
   "/injector": WindowInjector,
   "/spies": SpyComp,
   "/looted": LootedCounter,
@@ -71,7 +71,6 @@ export default {
   components: {
     WindowFooter,
     WindowScroll,
-    HelloWorld,
     TabItem,
   },
   data() {

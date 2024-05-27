@@ -1,5 +1,6 @@
 import {createStore} from 'vuex'
-import {$rootScope, EventTypeProvider, ModelService, RouteProvider, SocketService} from "./services";
+import {$rootScope, EventTypeProvider, RouteProvider, SocketService} from "./services";
+import {Villages} from "../utils/village";
 
 const emit = (route, payload, f) => {
     SocketService.emit(route, payload, (data) => {
@@ -28,20 +29,18 @@ const fetchDataAsync = async (route, payload, process) => {
     }
 };
 
-const runInterval = (f, t) => {f();setInterval(f, t)};
+const runInterval = (f, t) => {
+    f();
+    setInterval(f, t)
+};
 
-let getUniqueMapLocs = (x) => x.filter((value, index, self) =>
-        index === self.findIndex((t) => (
-            t.x === value.x && t.y === value.y
-        ))
-)
 
 // Create a new store instance.
-export function newStore(debug=true) {
+export function newStore(debug = true) {
     let log = (s) => console.log("Store: " + s);
     let withLog = (s, f) => {
         return () => {
-            debug ? log(s): null
+            debug ? log(s) : null
             return f()
         }
     }
@@ -52,28 +51,55 @@ export function newStore(debug=true) {
                 villages: [],
                 quests: {},
                 mapDataLoadInitialized: false,
+                progressMapLoad: {
+                    current: 0,
+                    total: 0,
+                },
+                progressTownLoad: {
+                    current: 0,
+                    total: 0,
+                }
+            }
+        },
+        getters: {
+            villageCount(state){
+                return state.villages.length
+            },
+            villageMinX(state) {
+                return Math.min(...state.villages.map((v)=>v.x))
+            },
+            villageMaxX(state) {
+                return Math.max(...state.villages.map((v)=>v.x))
+            },
+            villageMinY(state){
+                return Math.min(...state.villages.map((v)=>v.y))
+            },
+            villageMaxY(state){
+                return Math.max(...state.villages.map((v)=>v.y))
             }
         },
         mutations: {
             updateVillages(state, data) {
-                if (data.length === 0) {
-                    return
-                }
-                data = state.villages.concat(data)
-                state.villages = getUniqueMapLocs(data);
+                state.villages = Villages.unique(state.villages.concat(data))
             },
             updateQuests(state, data) {
                 state.quests = data;
+            },
+            setMapLoad(state, data) {
+                state.progressMapLoad = data
+            },
+            setTownLoad(state, data){
+                state.progressTownLoad = data
             }
         },
     })
 
-    $rootScope.$on(EventTypeProvider.QUESTS_QUEST_LINES, async function (e, d){
+    $rootScope.$on(EventTypeProvider.QUESTS_QUEST_LINES, async function (e, d) {
         console.log('QUESTS_QUEST_LINES')
         store.commit('updateQuests', d)
     })
 
-    $rootScope.$on(EventTypeProvider.QUESTS_QUEST_LINE_STARTED, async function (d){
+    $rootScope.$on(EventTypeProvider.QUESTS_QUEST_LINE_STARTED, async function (d) {
         console.log('QUESTS_QUEST_LINE_STARTED' + d)
         // console.log('quester')
         // let quests = await fetchDataAsync(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (data) => {
@@ -81,7 +107,7 @@ export function newStore(debug=true) {
         //     return data;
         // });
     })
-    $rootScope.$on(EventTypeProvider.QUESTS_QUEST_PROGRESS, async function (d){
+    $rootScope.$on(EventTypeProvider.QUESTS_QUEST_PROGRESS, async function (d) {
         console.log('QUESTS_QUEST_PROGRESS' + d)
         // console.log('quester')
         // let quests = await fetchDataAsync(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (data) => {
@@ -89,7 +115,7 @@ export function newStore(debug=true) {
         //     return data;
         // });
     })
-    $rootScope.$on(EventTypeProvider.QUESTS_QUEST_FINISHED, async function (d){
+    $rootScope.$on(EventTypeProvider.QUESTS_QUEST_FINISHED, async function (d) {
         // console.log('quester')
         // let quests = await fetchDataAsync(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (data) => {
         //     log("Get quests..." + data);
@@ -97,13 +123,12 @@ export function newStore(debug=true) {
         // });
     })
 
-    $rootScope.$on(EventTypeProvider.MAP_VILLAGE_DATA, function (e,d){
+    $rootScope.$on(EventTypeProvider.MAP_VILLAGE_DATA, function (e, d) {
         console.log(EventTypeProvider.MAP_VILLAGE_DATA)
         console.log(d)
-        store.commit('updateVillages', d['villages'])
     })
 
-    $rootScope.$on('QuestsInterfaceControllerInitialized', function() {
+    $rootScope.$on('QuestsInterfaceControllerInitialized', function () {
         // Your code here, executed after the QuestsInterfaceController is initialized
         console.log('emmitting')
         SocketService.emit(RouteProvider.QUESTS_GET_QUEST_LINES)
@@ -111,10 +136,9 @@ export function newStore(debug=true) {
 
     // should return list of all villages on load?
     // is executed multiple times so should concat?
-    $rootScope.$on("Map/miniVillageData", function (e, d){
+    $rootScope.$on("Map/miniVillageData", function (e, d) {
         console.log("Map/miniVillageData")
         console.log(d)
-        store.commit('updateVillages', d['villages'])
     })
 
     // setInterval(()=>{emit(RouteProvider.QUESTS_GET_QUEST_LINES, {}, (d)=>{

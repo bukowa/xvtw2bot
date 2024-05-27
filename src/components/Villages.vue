@@ -10,9 +10,13 @@ export default {
     ...mapState([
       'villages',
     ]),
-    villlageCount: ()=>{
-      return this.villages.length
-    },
+    ...mapGetters([
+        'villageMaxX',
+        "villageMinX",
+        "villageMaxY",
+        "villageMinY",
+        "villageCount"
+    ]),
   },
 }
 
@@ -20,14 +24,19 @@ export default {
 
 <template>
   <div>
+    count: {{villageCount}}
+    maxx: {{villageMaxX}}
+    maxy: {{villageMaxY}}
+    miny: {{villageMinY}}
+    minx: {{villageMinX}}
   </div>
-<!--  <json-viewer-->
-<!--      :value="villages"-->
-<!--      :expand-depth=1-->
-<!--      copyable-->
-<!--      boxed-->
-<!--      sort>-->
-<!--  </json-viewer>-->
+  <json-viewer
+      :value="villages"
+      :expand-depth=1
+      copyable
+      boxed
+      sort>
+  </json-viewer>
 
 </template>
 

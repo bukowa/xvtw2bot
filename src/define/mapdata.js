@@ -1,12 +1,6 @@
-import * as svc from "../modules/services"
-import {
-    $rootScope, EventTypeProvider,
-    RouteProvider,
-    SocketService,
-} from "../modules/services";
+import {$rootScope, EventTypeProvider, RouteProvider, SocketService} from "../modules/services"
 
-
-export const getGrid = (size, width, height) => {
+export const getMinimapGrid = (size, width, height) => {
     const grid = [];
     const xChunks = Math.ceil(size / width);
     const yChunks = Math.ceil(size / height);
@@ -27,45 +21,90 @@ export const getGrid = (size, width, height) => {
     return grid;
 };
 
-export var mapData = (window) => window.define('my/mapData', [
+export var mapService = (window) => window.define('my/mapService', [
     'conf/conf',
 ], function (
-    conf
+    conf,
 ) {
+    const delay = ms => new Promise(res => setTimeout(res, ms));
 
     window.angular.extend(EventTypeProvider, {
         MAP_DATA_LOAD_STARTED: 'map_data_load_started',
+        MAP_DATA_LOADED_ERROR: 'map_data_loaded_error',
         MAP_DATA_LOADED_SUCCESS: 'map_data_loaded_success',
-        MAP_DATA_LOADED_ERROR: 'map_data_loaded_error'
+
+        TOWN_DATA_LOAD_STARTED: 'town_data_load_started',
+        TOWN_DATA_LOAD_ERROR: 'town_data_load_error',
+        TOWN_DATA_LOAD_SUCCESS: 'town_data_load_success'
     });
 
-    const _mapData = {};
+    const mapService = {};
 
-    _mapData.load = async (progressCallback) => {
+    mapService.loadMap = async (progressCallback, delayMs = 200) => {
         try {
-            const delay = ms => new Promise(res => setTimeout(res, ms));
-            const grid = getGrid(conf.MAP_SIZE, 306, 306).flatMap(g => g);
-            const requests = grid.map((cell, i) => {
-                return new Promise((resolve, reject) => {
-                    delay(200 * i).then(() => {
+            const minimapGrid = getMinimapGrid(conf.MAP_SIZE, 306, 306).flatMap(g => g);
+            $rootScope.$broadcast(EventTypeProvider.MAP_DATA_LOAD_STARTED, minimapGrid)
+            const requests = minimapGrid.map((cell, i) =>
+                new Promise((resolve, reject) => {
+                    delay(delayMs * i).then(() => {
                         SocketService.emit(RouteProvider.MAP_GET_MINIMAP_VILLAGES, cell, (data) => {
                             if (data.message) {
                                 reject(data.message);
                             } else {
                                 resolve(data);
                             }
-                            progressCallback && progressCallback(cell, i, grid);
+                            progressCallback && progressCallback(cell, i, minimapGrid, data);
                         });
                     });
-                });
-            });
-
+                })
+            );
             const results = await Promise.all(requests);
             $rootScope.$broadcast(EventTypeProvider.MAP_DATA_LOADED_SUCCESS, results);
         } catch (error) {
+            console.log(error)
             $rootScope.$broadcast(EventTypeProvider.MAP_DATA_LOADED_ERROR, error);
         }
     };
 
-    return _mapData;
+    mapService.loadTowns = async ({minX, maxX, minY, maxY, charID}, progressCallback, delayMs = 200) => {
+        const step = 50;
+
+        let XY = []
+
+        for (let x = minX; x <= maxX; x += step) {
+            for (let y = minY; y <= maxY; y += step) {
+                XY.push({x: x, y: y})
+            }
+        }
+
+        try {
+            $rootScope.$broadcast(EventTypeProvider.TOWN_DATA_LOAD_STARTED, XY)
+            const requests = XY.map((xy, i) =>
+                new Promise((resolve, reject) => {
+                    delay(delayMs * i).then(() => {
+                        SocketService.emit(RouteProvider.MAP_GETVILLAGES, {
+                            x: xy.x,
+                            y: xy.y,
+                            width: step,
+                            height: step,
+                            character_id: charID,
+                        }, (data) => {
+                            if (data.message) {
+                                reject(data.message);
+                            } else {
+                                resolve(data);
+                            }
+                            progressCallback && progressCallback(xy, i, XY, data)
+                        })
+                    });
+                }));
+            await Promise.all(requests);
+            $rootScope.$broadcast(EventTypeProvider.TOWN_DATA_LOAD_SUCCESS)
+        } catch (error) {
+            console.log(error)
+            $rootScope.$broadcast(EventTypeProvider.TOWN_DATA_LOAD_ERROR, error)
+        }
+    };
+
+    return mapService;
 });
