@@ -3,6 +3,7 @@ import ProgressBar from 'primevue/progressbar';
 import {mapState} from "vuex";
 
 export default {
+  name: 'Loader',
   components: {
     ProgressBar
   },

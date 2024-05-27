@@ -2,7 +2,7 @@
   <div class="tab">
     <div class="tab-inner">
       <div>
-        <a :href="url" class="btn-icon btn-orange">{{ name }}</a>
+        <a class="btn-icon btn-orange">{{ name }}</a>
       </div>
     </div>
   </div>
@@ -15,5 +15,10 @@ export default {
     name: String,
     url: String
   },
+  methods: {
+    handleClick() {
+      this.$emit('click')
+    }
+  }
 }
 </script>

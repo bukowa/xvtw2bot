@@ -54,7 +54,7 @@ import 'primevue/resources/themes/aura-light-green/theme.css'
                     if (d['villages'].length > 0) {
                         app.store.commit("updateVillages", d['villages'])
                     }
-                }, 1000)
+                }, 200)
             }
         })
 
@@ -72,7 +72,7 @@ import 'primevue/resources/themes/aura-light-green/theme.css'
                 if (d['villages']) {
                     app.store.commit('updateVillages', d['villages'])
                 }
-            }, 1000);
+            }, 200);
         })
     })
 })

@@ -3,6 +3,7 @@ import JsonViewer from "vue-json-viewer";
 import {mapState, mapGetters} from "vuex";
 
 export default {
+  name: "Villages",
   components: {
     JsonViewer,
   },

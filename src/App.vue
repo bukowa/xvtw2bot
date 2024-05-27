@@ -17,13 +17,20 @@
       <div class="win-main jssb-applied jssb-scrolly jssb-focus" style="position: relative;">
         <div class="tabs tabs-bg">
           <div class="tabs-three-col">
-            <TabItem url="#/injector" name="Injector"></TabItem>
-            <TabItem url="#/spies" name="Spies"></TabItem>
-            <TabItem url="#/looted" name="Looted"></TabItem>
-            <TabItem url="#/quester" name="Quester"></TabItem>
-            <TabItem url="#/villages" name="Villages"></TabItem>
-            <TabItem url="#/runner" name="Runner"></TabItem>
-            <TabItem url="#/" name="Loader"></TabItem>
+            <TabItem
+                v-for="tab in tabs"
+                :key="tab.url"
+                :url="tab.url"
+                :name="tab.name"
+                @click="setPath(tab.url)"
+            />
+<!--            <TabItem url="#/injector" name="Injector" @click="setPath('/injector')"></TabItem>-->
+<!--            <TabItem url="#/spies" name="Spies"></TabItem>-->
+<!--            <TabItem url="#/looted" name="Looted"></TabItem>-->
+<!--            <TabItem url="#/quester" name="Quester"></TabItem>-->
+<!--            <TabItem url="#/villages" name="Villages"></TabItem>-->
+<!--            <TabItem url="#/runner" name="Runner"></TabItem>-->
+<!--            <TabItem url="#/" name="Loader"></TabItem>-->
           </div>
         </div>
         <div class="box-paper footer">
@@ -42,26 +49,13 @@
 import WindowFooter from "./components/WindowFooter.vue";
 import WindowScroll from "./components/WindowScroll.vue";
 import TabItem from './components/TabItem.vue';
-import WindowInjector from "./components/WindowInjector.vue";
-import SpyComp from "./components/SpyComp.vue";
-import LootedCounter from "./components/LootedCounter.vue";
-import Quester from "./components/Quester.vue";
 import Villages from "./components/Villages.vue";
-import NewRunner from "./components/NewRunner.vue";
 import Loader from "./components/Loader.vue";
+
 const wrapper = document.getElementById('wrapper');
 
 import * as svc from './modules/services'
-
-const routes = {
-  "/": Loader,
-  "/injector": WindowInjector,
-  "/spies": SpyComp,
-  "/looted": LootedCounter,
-  "/quester": Quester,
-  "/villages": Villages,
-  "/runner": NewRunner
-}
+import {mapState} from "vuex";
 
 const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -72,17 +66,31 @@ export default {
     WindowFooter,
     WindowScroll,
     TabItem,
+    Villages,
+    Loader,
   },
   data() {
     return {
       currentPath: window.location.hash,
       visible: false,
       windowIsHidden: true,
+      tabs: [
+        {url: '/', name: 'Loader'},
+        {url: '/villages', name: 'Villages'}
+      ]
+    }
+  },
+  methods: {
+    setPath(path) {
+      this.$store.commit('setPath', path)
     }
   },
   computed: {
+    ...mapState([
+      'path'
+    ]),
     currentView() {
-      return routes[this.currentPath.slice(1) || '/']
+      return this.tabs.find(tab=>tab.url === this.path).name
     }
   },
   watch: {
@@ -95,61 +103,61 @@ export default {
     }
   },
   async mounted() {
-    window.addEventListener('hashchange', () => {
-      this.currentPath = window.location.hash
-    })
-    // pick world
-
-    // skip tutorial
-    if (document.querySelector('[ng-click="openSkipTutorialModal()"]') != null) {
-      svc.SocketService.emit(svc.RouteProvider.TUTORIAL_SKIP, {}, function() {
-        svc.$rootScope.$broadcast(svc.EventTypeProvider.NOTIFICATION_ENABLE);
-        svc.$timeout(function() {
-          window.location.reload();
-        }, 100);
-      });
-    }
-    // take rewards
-
-    let e = document.querySelector('[ng-click="claimReward()"]');
-    if (e != null) {
-      e.click();
-    }
-    await sleep(500)
-    // skip news
-    e = document.querySelector('[ng-click="cancel(content); hide(notificationId);"]')
-    while (!e.classList.contains('ng-hide')) {
-      await sleep(500)
-      e.click();
-    }
+    // window.addEventListener('hashchange', () => {
+    //   this.currentPath = window.location.hash
+    // })
+    // // pick world
+    //
+    // // skip tutorial
+    // if (document.querySelector('[ng-click="openSkipTutorialModal()"]') != null) {
+    //   svc.SocketService.emit(svc.RouteProvider.TUTORIAL_SKIP, {}, function () {
+    //     svc.$rootScope.$broadcast(svc.EventTypeProvider.NOTIFICATION_ENABLE);
+    //     svc.$timeout(function () {
+    //       window.location.reload();
+    //     }, 100);
+    //   });
+    // }
+    // // take rewards
+    //
+    // let e = document.querySelector('[ng-click="claimReward()"]');
+    // if (e != null) {
+    //   e.click();
+    // }
+    // await sleep(500)
+    // // skip news
+    // e = document.querySelector('[ng-click="cancel(content); hide(notificationId);"]')
+    // while (!e.classList.contains('ng-hide')) {
+    //   await sleep(500)
+    //   e.click();
+    // }
   }
 }
 </script>
 
 <style>
 #tw2bot .scroll-wrap {
-  overflow-y : scroll;
-  height     : 100%;
+  overflow-y: scroll;
+  height: 100%;
 }
 
 #tw2bot-show {
-  position    : absolute;
-  bottom      : 110px;
-  left        : 0;
-  margin-left : 9px;
-  width       : 44px;
-  height      : 44px;
-  z-index     : 10;
+  position: absolute;
+  bottom: 110px;
+  left: 0;
+  margin-left: 9px;
+  width: 44px;
+  height: 44px;
+  z-index: 10;
 }
 
 #tw2bot-show:before {
-  content             : "";
-  background-image    : url(https://twxzz.innogamescdn.com/img/icons/alpha_eee77292f1.png);
-  background-position : -272px -1070px;
-  width               : 44px;
-  height              : 44px;
-  margin              : 2px 0 0 -2px;
-  display             : inline-block;
+  content: "";
+  background-image: url(https://twxzz.innogamescdn.com/img/icons/alpha_eee77292f1.png);
+  background-position: -272px -1070px;
+  width: 44px;
+  height: 44px;
+  margin: 2px 0 0 -2px;
+  display: inline-block;
 }
 
 /*#tw2bot {*/
@@ -159,7 +167,7 @@ export default {
 #wrapper.woho-window-open .two-menu-container,
 #wrapper.woho-window-open #tw2bot-show,
 #wrapper.window-open #tw2bot-show {
-  left : 713px;
+  left: 713px;
 }
 
 /*#wrapper.woho-window-open #topinterface-right-wrapper {*/

@@ -47,6 +47,7 @@ export function newStore(debug = true) {
     let store = createStore({
         state() {
             return {
+                path: "/",
                 count: 0,
                 villages: [],
                 quests: {},
@@ -79,6 +80,9 @@ export function newStore(debug = true) {
             }
         },
         mutations: {
+            setPath(state, data){
+                state.path = data
+            },
             updateVillages(state, data) {
                 state.villages = Villages.unique(state.villages.concat(data))
             },
