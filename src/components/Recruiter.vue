@@ -3,6 +3,13 @@ import {useRecruiterStore} from "../store/Recruiter";
 
 const store = useRecruiterStore();
 const recruitService = injector.get('recruitingService');
+const villageService = injector.get('villageService');
+const eventTypeProvider = injector.get('eventTypeProvider');
+const rootScope = injector.get('$rootScope');
+
+function selectVillage(villageId) {
+  rootScope.$broadcast(eventTypeProvider.MAP_SELECT_VILLAGE, villageId);
+}
 
 const recruitBarracks = (unit, amount) => {
   // select active village first
