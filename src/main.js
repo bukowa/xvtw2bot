@@ -3,6 +3,8 @@ import App from './App.vue'
 import {ModelService, Init, $rootScope, EventTypeProvider} from "./modules/services";
 import {newStore} from "./modules/store"
 import {mapService} from "./define/mapdata";
+import {createPinia} from "pinia";
+
 (function awaitInjector (window, main) {
     if (typeof window.injector === 'undefined') {
         setTimeout(() => awaitInjector(window, main), 250);
@@ -20,11 +22,14 @@ import {mapService} from "./define/mapdata";
     define('my/app', [
         'struct/MapData',
     ], function (mapData) {
+        console.log("Creating new pinia...")
+        let pinia = createPinia()
         console.log("Creating new store...")
         let store = newStore()
         console.log("Creating new app...")
         let app = createApp(App)
         app.use(store)
+        app.use(pinia)
         console.log("Mounting #app...")
         app.mount('#app')
         return {app: app, store: store};
