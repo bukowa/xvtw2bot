@@ -57,6 +57,7 @@ const wrapper = document.getElementById('wrapper');
 import * as svc from './modules/services'
 import {mapState} from "vuex";
 import Recruiter from "./components/Recruiter.vue";
+import PlayerVillages from "./components/PlayerVillages.vue";
 
 const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -69,7 +70,8 @@ export default {
     TabItem,
     Villages,
     Loader,
-    Recruiter
+    Recruiter,
+    PlayerVillages
   },
   data() {
     return {
@@ -79,7 +81,8 @@ export default {
       tabs: [
         {url: '/', name: 'Loader'},
         {url: '/villages', name: 'Villages'},
-        {url: '/recruiter', name: 'Recruiter'}
+        {url: '/recruiter', name: 'Recruiter'},
+        {url: '/playerVillages', name: 'PlayerVillages'},
       ]
     }
   },
